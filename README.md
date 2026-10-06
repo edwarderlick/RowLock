@@ -46,4 +46,8 @@ pytest tests/direct/test_rowlock.py -v
 genvm-lint contracts/rowlock.py
 ```
 
-The recorded direct run passed **18/18 tests**. It covers payment, refund, cancellation, expiry, malformed input and output, changed source content, failed fetching, and prompt injection. The linter passed with four `time.time()` nondeterminism warnings; see the source for the exact time handling. The direct tests and linter are separate from the two live Studio Dev settlement runs documented above.
+The recorded direct run passed **18/18 tests**. It covers payment, refund, cancellation, expiry, malformed input and output, changed source content, failed fetching, and prompt injection. The direct tests and linter are separate from the two live Studio Dev settlement runs documented above.
+
+### Timestamp lint warnings
+
+The linter passes but reports four `time.time()` warnings at lines 110, 136, 157, and 238. Its [AST safety check](https://docs.genlayer.com/api-references/genlayer-linter) flags that call by name. GenLayer's [transaction-context documentation](https://docs.genlayer.com/developers/intelligent-contracts/features/transaction-context) states that, inside GenVM, `time.time()` is pinned to the transaction timestamp and is the same across validators. This applies to the calls in `resolve` and `expire` as well as the calls used while funding and submitting. The warnings remain visible here so reviewers can assess them against the documented runtime behavior.
